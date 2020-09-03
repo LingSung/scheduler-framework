@@ -6,13 +6,18 @@ import (
 	v1qos "k8s.io/kubernetes/pkg/apis/core/v1/helper/qos"
 	"k8s.io/apimachinery/pkg/runtime"
 	"strconv"
+	"context"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const Name = "xtutx"
 
-type Scheduler struct {}
+type Scheduler struct {
+	handle framework.FrameworkHandle
+}
 
 var _ framework.QueueSortPlugin = &Scheduler{}
+var _ framework.PreFilterPlugin = &Scheduler{}
 
 func (*Scheduler) Name() string {
 	return Name
@@ -50,7 +55,55 @@ func GetPodPriority(pod *v1.Pod) int {
 	return groupPriorityValue
 }
 
+func (s *Scheduler) PreFilter(ctx context.Context, state *framework.CycleState, pod *v1.Pod) *framework.Status {
+	podGroup, podGroupExist := pod.Labels["podGroup"]
+	if !podGroupExist {
+		return framework.NewStatus(framework.Success, "podGroup label doesn't exist")
+	}
+
+	minAvailable, minAvailableExist := pod.Labels["minAvailable"]
+	if !minAvailableExist {
+		return framework.NewStatus(framework.Success, "minAvailable label doesn't exist")
+	}
+
+	minAvailableValue, err := strconv.Atoi(minAvailable)
+	if err != nil {
+		return framework.NewStatus(framework.Unschedulable, "atoi error")
+	}
+
+	totalNumOfPod := s.getTotalNumofPod(pod.Namespace, podGroup)
+	if totalNumOfPod < minAvailableValue {
+		return framework.NewStatus(framework.Unschedulable, "total number of pods is not enough")
+	} 
+
+	return framework.NewStatus(framework.Success, "PreFliter done")
+}
+
+func (s *Scheduler) getTotalNumofPod(namespace string, podgroup string) int {
+	Podlist, err := s.handle.ClientSet().CoreV1().Pods(namespace).List(metav1.ListOptions{})
+
+	if err != nil {
+		return 0
+	}
+
+	total := 0
+	for _, pod := range Podlist.Items {
+		if podGroup, ok := pod.Labels["podGroup"]; ok && podGroup == podgroup {
+			total++
+		}
+	}
+
+	return total
+}
+
+// PreFilterExtensions ...
+func (*Scheduler) PreFilterExtensions() framework.PreFilterExtensions {
+	return nil
+}
+
 // New initializes a new plugin and returns it.
 func New(_ *runtime.Unknown, _ framework.FrameworkHandle) (framework.Plugin, error) {
-	return &Scheduler{}, nil
+	return &Scheduler{
+		handle: handle,
+	}, nil
 }
