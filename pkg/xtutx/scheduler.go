@@ -102,7 +102,7 @@ func (*Scheduler) PreFilterExtensions() framework.PreFilterExtensions {
 }
 
 // New initializes a new plugin and returns it.
-func New(_ *runtime.Unknown, _ framework.FrameworkHandle) (framework.Plugin, error) {
+func New(_ *runtime.Unknown, handle framework.FrameworkHandle) (framework.Plugin, error) {
 	return &Scheduler{
 		handle: handle,
 	}, nil
