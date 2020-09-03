@@ -1,15 +1,16 @@
 package main
 
 import (
+	"fmt"
+	"github.com/LingSung/Scheduler-framework/pkg/register"
+	"k8s.io/component-base/logs"
 	"math/rand"
 	"os"
 	"time"
-	"k8s.io/component-base/logs"
-	"fmt"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UTC().UnixNano())
 	command := register.Register()
 	logs.InitLogs()
 	defer logs.FlushLogs()
