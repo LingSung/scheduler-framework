@@ -1,7 +1,7 @@
 package register
 
 import (
-	"github.com/LingSung/Scheduler-framework/pkg/xtutx"
+	"github.com/LingSung/scheduler-framework/pkg/xtutx"
 	"github.com/spf13/cobra"
 	"k8s.io/kubernetes/cmd/kube-scheduler/app"
 )

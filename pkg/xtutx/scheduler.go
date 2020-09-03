@@ -1,7 +1,6 @@
 package xtutx
 
 import (
-	"k8s.io/kubernetes/pkg/api/v1/pod"
 	framework "k8s.io/kubernetes/pkg/scheduler/framework/v1alpha1"
 	v1 "k8s.io/api/core/v1"
 	v1qos "k8s.io/kubernetes/pkg/apis/core/v1/helper/qos"

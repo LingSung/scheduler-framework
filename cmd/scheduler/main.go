@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/LingSung/Scheduler-framework/pkg/register"
+	"github.com/LingSung/scheduler-framework/pkg/register"
 	"k8s.io/component-base/logs"
 	"math/rand"
 	"os"

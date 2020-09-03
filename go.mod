@@ -1,4 +1,5 @@
-module github.com/justin0u0/ouo-scheduler
+module github.com/LingSung/scheduler-framework
+
 
 go 1.14
 
